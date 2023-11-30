@@ -49,6 +49,7 @@ if __name__ == "__main__":
                         global_optimizer=global_optimizer,
                         global_ep=global_ep,
                         global_ep_r=global_ep_r,
+                        res_queue=res_queue,
                         name=i,
                         stop_event=stop_event) for i in range(1)]
     # workers = [DQNActor(env_name, state_dim, action_dim, global_ep, global_model, global_optimizer, i, stop_event) for i in range(1)]

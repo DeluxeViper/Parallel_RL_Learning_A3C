@@ -38,7 +38,7 @@ np.set_printoptions(precision=20)
     
 # Equivalent to a worker
 class DQNActor(mp.Process):
-    def __init__(self, global_model, global_optimizer, global_ep, global_ep_r, name, stop_event):
+    def __init__(self, global_model, global_optimizer, global_ep, global_ep_r, res_queue, name, stop_event):
         super(DQNActor, self).__init__()
 
         self.memory = Memory(MAX_MEMORY)
@@ -52,11 +52,12 @@ class DQNActor(mp.Process):
 
     def get_action(self, policy, num_actions):
         # Converts an array that looks like [[1 1]] to [1, 1]
-        policy = policy.data.numpy()[0].flatten()
-        policy = policy.tolist() 
+        # policy = policy.data.numpy()[0].flatten()
+        # policy = policy.tolist() 
+        policy = policy.data.numpy()[0]
         probabilities_sum = np.sum(policy)
         normalized_probabilities = [p / probabilities_sum for p in policy]
-        action = np.random.choice(num_actions, size=num_actions, p=normalized_probabilities)[0]
+        action = np.random.choice(num_actions, 1, p=policy)[0]
         # print(f'action choice: {action}, normalized_probs: {normalized_probabilities}')
         return action
 
@@ -101,6 +102,7 @@ class DQNActor(mp.Process):
 
                     self.local_model.pull_from_global_model(self.global_model)
                     # memory = Memory(n_step)
+                    self.memory.clear()
 
                 if done:
                     # running_score = self.record(score, loss)

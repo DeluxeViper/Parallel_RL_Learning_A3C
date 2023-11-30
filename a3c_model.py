@@ -13,19 +13,23 @@ class Model(nn.Module):
 
         self.fc = nn.Linear(num_inputs, 128)
         self.fc_actor = nn.Linear(128, num_outputs)
+        self.v1 = nn.Linear(num_inputs, 128)
         self.fc_critic = nn.Linear(128, 1)
 
         for m in self.modules():
             if isinstance(m, nn.Linear):
                 nn.init.xavier_uniform_(m.weight)
-                m.bias.data.fill_(0.01)
+                m.bias.data.fill_(0)
 
     def forward(self, input):
         x = F.relu(self.fc(input))
         policy = F.softmax(self.fc_actor(x), dim=-1)
         # value = self.fc_critic(x)
         # return policy, value
-        return policy, self.fc_critic(x)
+        # return policy, self.fc_critic(x)
+        v1 = torch.tanh(self.v1(input))
+        values = self.fc_critic(v1)
+        return policy, values
 
     def get_action(self, input):
         policy, _ = self.forward(input)
