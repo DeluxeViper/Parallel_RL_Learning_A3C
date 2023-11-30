@@ -75,14 +75,15 @@ class DQNActor(mp.Process):
             state, info = self.env.reset()
             state = torch.FloatTensor(state).unsqueeze(0)
             # memory = Memory(n_step)
+            truncated = False
 
-            while True:
+            while not (done or truncated):
                 # print(f'state: {state}, {state.squeeze(0)}')
                 # policy, value = self.local_model(state.squeeze(0))
                 policy, value = self.local_model(state.detach())
                 action = self.get_action(policy, self.num_actions)
 
-                next_state, reward, done, _, _ = self.env.step(action)
+                next_state, reward, done, truncated, _ = self.env.step(action)
                 next_state = torch.FloatTensor(next_state)
                 next_state = next_state.unsqueeze(0)
 
@@ -107,14 +108,17 @@ class DQNActor(mp.Process):
                 if done:
                     # running_score = self.record(score, loss)
                     break
-
+            if(truncated):
+                truncate_counter +=1
+            else:
+                truncate_counter = 0
             self.global_ep.value +=1 # no lock is needed
             total_reward += score
             wandb.log({"Average reward": total_reward/(self.global_ep.value+1)})
             wandb.log({"Reward": score})
             print(f'Name: {self.name}, Global episode {self.global_ep.value}: Total reward {score}')
 
-            if (score >= 2000):
+            if truncate_counter == 2:
                 print("Target reward achieved, stopping training")
                 self.stop_event.set()
                 break

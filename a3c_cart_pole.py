@@ -51,7 +51,7 @@ if __name__ == "__main__":
                         global_ep_r=global_ep_r,
                         res_queue=res_queue,
                         name=i,
-                        stop_event=stop_event) for i in range(1)]
+                        stop_event=stop_event) for i in range(NUM_ACTORS)]
     # workers = [DQNActor(env_name, state_dim, action_dim, global_ep, global_model, global_optimizer, i, stop_event) for i in range(1)]
     # workers = [Worker(global_model, global_optimizer, global_ep, global_ep_r, res_queue, i) for i in range(mp.cpu_count())] 
     [w.start() for w in workers]
