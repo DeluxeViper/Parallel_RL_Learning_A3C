@@ -11,10 +11,10 @@ class Model(nn.Module):
         self.num_inputs = num_inputs
         self.num_outputs = num_outputs
 
-        self.fc = nn.Linear(num_inputs, 128)
-        self.fc_actor = nn.Linear(128, num_outputs)
-        self.v1 = nn.Linear(num_inputs, 128)
-        self.fc_critic = nn.Linear(128, 1)
+        self.fc = nn.Linear(num_inputs, 256)
+        self.fc_actor = nn.Linear(256, num_outputs)
+        self.v1 = nn.Linear(num_inputs, 256)
+        self.fc_critic = nn.Linear(256, 1)
 
         for m in self.modules():
             if isinstance(m, nn.Linear):
