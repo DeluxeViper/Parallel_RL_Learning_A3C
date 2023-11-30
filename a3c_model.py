@@ -32,60 +32,9 @@ class Model(nn.Module):
         policy = policy[0].data.numpy()
 
         action = np.random.choice(self.num_outputs, 1, p=policy)[0]
-        print('action: {action}')
+        print('model action: {action}')
         return action
-    # # def __init__(self, input_dim, output_dim):
-    # #     super(Model, self).__init__()
-    # #     self.fc = nn.Sequential(
-    # #         nn.Linear(input_dim, 128),
-    # #         nn.ReLU(),
-    # #         nn.Linear(128, output_dim)
-    # #     )
-    # #     self.fc.apply(self.init_weights)
     
-    # def init_weights(self, m):
-    #     if isinstance(m, nn.Linear):
-    #         torch.nn.init.xavier_uniform_(m.weight)
-    #         m.bias.data.fill_(0.01)
-        
-    # # def forward(self, x):
-    # #     return self.fc(x)
-    # def __init__(self, num_inputs, num_outputs):
-    #     super(Model, self).__init__()
-    #     self.num_inputs = num_inputs
-    #     self.num_outputs = num_outputs
-    #     self.action_dim = num_outputs
-
-    #     # self.fc = nn.Linear(num_inputs, 128)
-    #     # self.fc_actor = nn.Linear(128, num_outputs)
-    #     # self.fc_critic = nn.Linear(128, 1)
-    #     self.fc = nn.Sequential(
-    #         nn.Linear(num_inputs, 128),
-    #         nn.ReLU(),
-    #         nn.Linear(128, num_outputs),
-    #     )
-    #     # self.fc_critic = nn.Linear(128, 1)
-    #     self.fc.apply(self.init_weights)
-
-    #     # for m in self.modules():
-    #     #     if isinstance(m, nn.Linear):
-    #     #         nn.init.xavier_uniform(m.weight)
-    #     #         m.bias.data.fill_(0.01)
-
-    # def forward(self, input):
-    #     # x = F.relu(self.fc(input))
-    #     # policy = F.softmax(self.fc_actor(x))
-    #     # value = self.fc_critic(x)
-    #     return self.fc(input), self.fc_critic(input)
-
-    # def select_action(self, state, epsilon):
-    #     if np.random.rand() < epsilon:
-    #         return np.random.choice(self.action_dim)
-    #     state_tensor = torch.FloatTensor(state).unsqueeze(0)
-    #     with torch.no_grad():
-    #         q_values = self.model(state_tensor)
-    #     return q_values.argmax().item()
-
 class GlobalModel(Model):
     def __init__(self, num_inputs, num_outputs):
         super(GlobalModel, self).__init__(num_inputs, num_outputs)
@@ -122,6 +71,7 @@ class LocalModel(Model):
 
         loss = (loss_policy + loss_value - 0.01 * entropy).mean()
 
+        # print(f'Pushing local to Global model loss: {loss}')
         global_optimizer.zero_grad()
         loss.backward()
         for lp, gp in zip(self.parameters(), global_model.parameters()):

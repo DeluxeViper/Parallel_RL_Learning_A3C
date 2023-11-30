@@ -55,13 +55,4 @@ if __name__ == "__main__":
     # workers = [Worker(global_model, global_optimizer, global_ep, global_ep_r, res_queue, i) for i in range(mp.cpu_count())] 
     [w.start() for w in workers]
     res = []
-    while True:
-        r = res_queue.get()
-        if r is not None:
-            res.append(r)
-            [ep, ep_r, loss] = r
-            writer.add_scalar('log/score', float(ep_r), ep)
-            writer.add_scalar('log/loss', float(loss), ep)
-        else:
-            break
     [w.join() for w in workers]

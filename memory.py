@@ -1,26 +1,27 @@
 import random
-from collections import namedtuple
+from collections import namedtuple, deque
 
 Transition = namedtuple('Transition', ('state', 'next_state', 'action', 'reward', 'mask'))
 
 
 class Memory(object):
     def __init__(self, capacity):
-        self.memory = []
+        self.buffer = deque(maxlen=capacity)
         self.capacity = capacity
         self.position = 0
 
     def push(self, state, next_state, action, reward, mask):
-        """Saves a transition."""
-        if len(self.memory) < self.capacity:
-            self.memory.append(Transition(state, next_state, action, reward, mask))
-        self.memory[self.position] = Transition(state, next_state, action, reward, mask)
-        self.position = (self.position + 1) % self.capacity
+        # """Saves a transition."""
+        self.buffer.append(Transition(state, next_state, action, reward, mask))
 
-    def sample(self):
-        transitions = self.memory
-        batch = Transition(*zip(*transitions))
+    def sample(self, batch_size):
+        # transitions = self.buffer
+        sampled_transitions = random.sample(self.buffer, batch_size)
+        batch = Transition(*zip(*sampled_transitions))
         return batch
 
     def __len__(self):
-        return len(self.memory)
+        return len(self.buffer)
+        
+    def clear(self):
+        self.buffer.clear()

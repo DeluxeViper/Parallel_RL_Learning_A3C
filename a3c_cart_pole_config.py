@@ -10,15 +10,15 @@ import torch
 SHARE_MEM_DEVICE = torch.device('cpu')
 DEVICE = torch.device('cpu')
 
-MAX_MEMORY = 3000
+MAX_MEMORY = 10000
 NUM_EPISODES = 3000
 max_episode = 3000
-lr = 0.00001
+lr = 0.0001
 log_interval = 10
 n_step = 10
 env_name = "CartPole-v1"
 NUM_ACTORS = 2
-LR = 1e-5
+LR = 1e-3
 GAMMA = 0.99
 BATCH_SIZE = 64
 UPDATE_TARGET = 1000
